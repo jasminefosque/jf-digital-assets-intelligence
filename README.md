@@ -1,18 +1,22 @@
 # Digital Assets Intelligence
 
-Monetary infrastructure analytics tracking digital asset market structure, stablecoin growth, on-chain liquidity, ETF positioning, and derivative leverage conditions.
+**Example Dashboard - For Portfolio Demonstration Only**
 
-**This repository demonstrates dashboard architecture, modeling logic, and visualization systems. Production data pipelines and proprietary datasets are not included.**
+This is a demonstration dashboard showcasing software engineering and DevOps capabilities through dashboard architecture, data modeling, and visualization systems. 
+
+**⚠️ Important: This uses synthetic data only. No real APIs are connected, and no production data sources are included.**
 
 ## Overview
 
-This dashboard frames cryptocurrency markets as monetary plumbing and liquidity rails, analyzing:
+This example dashboard demonstrates analytics capabilities by modeling digital asset market concepts:
 - Market structure dynamics (regimes, volatility, drawdowns)
 - Stablecoin infrastructure as dollar liquidity proxy
 - On-chain transaction and network activity
 - Institutional ETF positioning and flows
 - Derivatives leverage and funding dynamics
 - Liquidity stress and risk regime classification
+
+All data is synthetically generated to showcase the dashboard functionality without requiring actual data sources.
 
 ## Architecture
 
@@ -25,15 +29,15 @@ This dashboard frames cryptocurrency markets as monetary plumbing and liquidity 
 ┌──────────────────▼───────────────────────────────────────┐
 │              DataProvider Interface                       │
 │   getSeries() | getLatest() | getMetadata() | getEvents()│
-└───────┬──────────────────────────────┬───────────────────┘
-        │                              │
-┌───────▼──────────────┐    ┌──────────▼───────────────────┐
-│ SyntheticDataProvider│    │  OpenDataProvider (stub)     │
-│  Realistic generator │    │  Free/keyless APIs only      │
-└──────────────────────┘    └──────────────────────────────┘
+└───────┬──────────────────────────────────────────────────┘
+        │
+┌───────▼──────────────┐    
+│ SyntheticDataProvider│    (Example Implementation)
+│  Realistic generator │    
+└──────────────────────┘    
 ```
 
-The DataProvider pattern separates UI from data sources, protecting production pipelines while enabling portfolio demonstration.
+The DataProvider pattern separates UI from data sources. This example uses synthetic data generation, but the architecture supports connecting any data source through the same interface.
 
 ## Folder Structure
 
@@ -45,8 +49,9 @@ jf-digital-assets-intelligence/
 │   │   ├── charts/       # Reusable chart components
 │   │   └── layout/       # Layout components (Header, Sidebar, etc.)
 │   ├── data/
-│   │   ├── synthetic/    # Synthetic data generator
-│   │   └── adapters/     # Data provider adapters
+│   │   ├── synthetic/    # Synthetic data generator (example implementation)
+│   │   ├── DataProvider.ts  # Data provider interface
+│   │   └── index.ts      # Provider factory
 │   ├── hooks/            # Custom React hooks
 │   ├── lib/              # Utilities and helpers
 │   ├── models/           # Zod schemas
@@ -58,10 +63,9 @@ jf-digital-assets-intelligence/
 └── public/               # Static assets
 ```
 
-## Data Modes
+## Example Data Implementation
 
-### Synthetic Mode (Default)
-Generates realistic digital asset market behavior with:
+This dashboard uses **synthetic data generation** to demonstrate functionality:
 - Bull/bear market regimes
 - Volatility clustering  
 - Stablecoin supply dynamics
@@ -69,14 +73,7 @@ Generates realistic digital asset market behavior with:
 - Derivatives leverage cycles
 - 8+ labeled market events
 
-### Open Mode (Optional)
-Stub for connecting free, keyless open data endpoints. No API keys required.
-
-Set via environment variable:
-```bash
-VITE_DATA_MODE=synthetic  # Default
-VITE_DATA_MODE=open       # Stub mode
-```
+This approach showcases the dashboard's capabilities without requiring external API connections or data subscriptions.
 
 ## How to Run
 
@@ -160,26 +157,31 @@ Right-side drawer explaining:
 
 ## Security
 
-✅ No API keys committed
-✅ No production endpoints  
-✅ No real database credentials
+✅ No API keys or credentials required
+✅ No external data connections  
+✅ No production endpoints
 ✅ No proprietary datasets
 
-See [docs/SECURITY.md](docs/SECURITY.md) for detailed security guidance.
+This is a standalone example dashboard using only synthetic data.
+
+See [docs/SECURITY.md](docs/SECURITY.md) for guidance on implementing secure data integrations.
 
 ## Metrics
 
 See [docs/METRICS.md](docs/METRICS.md) for complete metric definitions, units, and expected ranges.
 
-## Contributing to Real Data Adapters
+## Extending with Real Data Sources
 
-To add a real data adapter:
+This example dashboard can be extended to connect real data sources. The DataProvider interface architecture demonstrates how to:
 
-1. Create a new provider class implementing `DataProvider` interface
-2. Map external data to `TimeSeries` and `Event` schemas
-3. Update `src/data/index.ts` factory
-4. Use **only keyless, free endpoints**
-5. No API keys in code—use environment variables
+1. **Implement the DataProvider interface** in a new class
+2. **Map external data formats** to the TimeSeries and Event schemas
+3. **Handle data fetching** with proper error handling and caching
+4. **Manage API credentials** securely through environment variables
+
+For detailed guidance on implementing data integrations with DevOps best practices, see [docs/INSTRUCTIONS.md](docs/INSTRUCTIONS.md).
+
+**Note:** This repository intentionally does not include specific API implementations or recommendations to keep it as a generic engineering showcase.
 
 ## Customization
 
@@ -212,4 +214,4 @@ Jasmine Fosque
 
 ---
 
-**Portfolio Disclaimer**: This project demonstrates software engineering capabilities. Production systems use proprietary data pipelines, paid vendor integrations, and secure infrastructure not included in this repository.
+**Portfolio Disclaimer**: This is an example dashboard demonstrating software engineering and DevOps capabilities. It uses synthetic data only and does not connect to any real data sources or APIs. Production systems would require proper data pipelines, API integrations, and secure infrastructure.

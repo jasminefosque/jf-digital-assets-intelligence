@@ -1,19 +1,21 @@
 # Architecture Documentation
 
-This document describes the architectural patterns and design decisions in the Digital Assets Intelligence dashboard.
+This document describes the architectural patterns and design decisions in the Digital Assets Intelligence example dashboard.
 
 ## Design Philosophy
 
-This dashboard is built to demonstrate:
+This example dashboard demonstrates:
 1. **Clean separation of concerns** between UI and data sources
-2. **Portfolio-safe architecture** that protects production pipelines
-3. **Realistic synthetic data** that mirrors actual market behavior
+2. **Professional architecture patterns** suitable for production systems
+3. **Synthetic data generation** that demonstrates realistic market modeling
 4. **Production-ready code quality** with strong typing and validation
+
+**Note**: This is an example implementation using synthetic data only. No real APIs or data sources are connected.
 
 ## DataProvider Pattern
 
 ### Purpose
-The DataProvider interface abstracts all data access, allowing the UI to remain completely decoupled from data sources. This protects proprietary pipelines while enabling portfolio demonstration.
+The DataProvider interface abstracts all data access, allowing the UI to remain completely decoupled from data sources. This demonstrates how to build extensible, maintainable data architectures.
 
 ### Interface Definition
 
@@ -28,29 +30,24 @@ interface DataProvider {
 
 ### Implementations
 
-#### 1. SyntheticDataProvider (Fully Implemented)
+#### SyntheticDataProvider (Example Implementation)
 - Generates 2 years of realistic digital asset market data
 - Implements complex regime-based dynamics
 - Creates correlated time series
 - Produces labeled market events
 - **No external dependencies—runs completely offline**
 
-#### 2. OpenDataProvider (Stub)
-- Placeholder for free, keyless open data endpoints
-- No API keys required
-- Optional—not needed for demo
-- Examples: CoinGecko public API, Blockchain.com, etc.
+This example implementation demonstrates data modeling and generation capabilities.
 
 ### Factory Pattern
 
 ```typescript
 function createDataProvider(): DataProvider {
-  const mode = import.meta.env.VITE_DATA_MODE || 'synthetic';
-  return mode === 'synthetic' 
-    ? new SyntheticDataProvider() 
-    : new OpenDataProvider();
+  return new SyntheticDataProvider();
 }
 ```
+
+In a production system, this factory would support multiple provider implementations and environment-based configuration.
 
 ## Synthetic Data Engine
 
@@ -249,14 +246,25 @@ Future implementation with html2canvas or similar library.
 - Code splitting by page
 - Dynamic imports for chart libraries
 
-## Extending the Architecture
+### Extending the Architecture
 
-### Adding a New Data Provider
+This architecture demonstrates how to build extensible data integration systems:
+
+#### Adding a New Data Provider
 1. Implement `DataProvider` interface
-2. Map external data to schemas
-3. Handle errors gracefully
-4. Add to factory in `src/data/index.ts`
-5. Document in README
+2. Map external data formats to internal schemas
+3. Implement error handling and retry logic
+4. Add caching for performance
+5. Update factory in `src/data/index.ts`
+
+#### DevOps Considerations for Production Systems
+- Secure credential management (environment variables, secrets managers)
+- API rate limiting and quota management
+- Monitoring and alerting for data quality
+- Fallback strategies for API failures
+- CI/CD integration for deployment
+
+See [INSTRUCTIONS.md](INSTRUCTIONS.md) for detailed examples of implementing data integrations with DevOps best practices.
 
 ### Adding a New Metric
 1. Add calculation in `SyntheticGenerator`
@@ -308,10 +316,10 @@ Environment variables must be configured in hosting platform.
 
 ## Conclusion
 
-This architecture prioritizes:
+This architecture demonstrates:
 - **Maintainability**: Clear separation of concerns
-- **Security**: No secrets, no production exposure
-- **Demonstrability**: Runs out-of-the-box with synthetic data
-- **Extensibility**: Easy to add new metrics and providers
+- **Security awareness**: No hardcoded credentials or secrets
+- **Professional patterns**: Industry-standard architectural approaches
+- **Extensibility**: Easy to add new metrics and data providers
 
-The design showcases professional software engineering while protecting proprietary systems.
+This example showcases software engineering and DevOps capabilities through a well-architected dashboard system.

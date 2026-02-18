@@ -1,26 +1,17 @@
 import type { DataProvider } from './DataProvider';
 import { SyntheticDataProvider } from './synthetic/SyntheticDataProvider';
-import { OpenDataProvider } from './adapters/OpenDataProvider';
-
-export type DataMode = 'synthetic' | 'open';
 
 /**
- * Factory function to create the appropriate data provider based on environment
+ * Factory function to create the data provider
+ * This example dashboard uses synthetic data only
+ * 
+ * To add real data sources:
+ * 1. Create a new provider class implementing DataProvider interface
+ * 2. Import and instantiate it here
+ * 3. Update environment configuration as needed
  */
 export function createDataProvider(): DataProvider {
-  const mode = (import.meta.env.VITE_DATA_MODE || 'synthetic') as DataMode;
-  
-  console.log(`[DataProvider] Initializing in ${mode} mode`);
-  
-  switch (mode) {
-    case 'synthetic':
-      return new SyntheticDataProvider();
-    case 'open':
-      return new OpenDataProvider();
-    default:
-      console.warn(`Unknown data mode: ${mode}, defaulting to synthetic`);
-      return new SyntheticDataProvider();
-  }
+  return new SyntheticDataProvider();
 }
 
 // Singleton instance
