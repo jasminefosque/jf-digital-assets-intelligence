@@ -1,0 +1,100 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="1200" height="80" fill="#1e293b" opacity="0.8"/>
+  <text x="40" y="45" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#f8fafc">
+    Digital Assets Intelligence
+  </text>
+  <text x="40" y="65" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">
+    Monetary Infrastructure Analytics
+  </text>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="80" width="250" height="720" fill="#1e293b" opacity="0.6"/>
+  
+  <!-- Navigation Items -->
+  <rect x="20" y="110" width="210" height="40" rx="6" fill="#3b82f6"/>
+  <text x="35" y="135" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">
+    Overview
+  </text>
+  
+  <text x="35" y="175" font-family="Arial, sans-serif" font-size="14" fill="#cbd5e1">
+    Market Structure
+  </text>
+  <text x="35" y="210" font-family="Arial, sans-serif" font-size="14" fill="#cbd5e1">
+    Stablecoin Rail
+  </text>
+  <text x="35" y="245" font-family="Arial, sans-serif" font-size="14" fill="#cbd5e1">
+    On-Chain Liquidity
+  </text>
+  <text x="35" y="280" font-family="Arial, sans-serif" font-size="14" fill="#cbd5e1">
+    ETF Positioning
+  </text>
+  <text x="35" y="315" font-family="Arial, sans-serif" font-size="14" fill="#cbd5e1">
+    Derivatives Leverage
+  </text>
+  <text x="35" y="350" font-family="Arial, sans-serif" font-size="14" fill="#cbd5e1">
+    Risk Regime
+  </text>
+  
+  <!-- Main Content Area -->
+  <rect x="250" y="80" width="950" height="720" fill="#0f172a" opacity="0.3"/>
+  
+  <!-- Chart Placeholders -->
+  <!-- Chart 1 -->
+  <rect x="280" y="120" width="430" height="300" rx="8" fill="#1e293b" opacity="0.8"/>
+  <text x="300" y="150" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#f8fafc">
+    BTC Price &amp; Volatility
+  </text>
+  <path d="M 300 250 Q 400 200, 500 230 T 700 200" stroke="#f59e0b" stroke-width="2" fill="none"/>
+  <path d="M 300 280 Q 400 260, 500 270 T 700 250" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+  
+  <!-- Chart 2 -->
+  <rect x="740" y="120" width="430" height="300" rx="8" fill="#1e293b" opacity="0.8"/>
+  <text x="760" y="150" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#f8fafc">
+    Market Cap with Regime Shading
+  </text>
+  <rect x="760" y="180" width="200" height="220" fill="#10b981" opacity="0.1"/>
+  <rect x="960" y="180" width="190" height="220" fill="#ef4444" opacity="0.1"/>
+  <path d="M 760 300 Q 860 250, 960 280 T 1160 290" stroke="#3b82f6" stroke-width="2" fill="none"/>
+  
+  <!-- Chart 3 -->
+  <rect x="280" y="450" width="430" height="300" rx="8" fill="#1e293b" opacity="0.8"/>
+  <text x="300" y="480" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#f8fafc">
+    Stablecoin Supply
+  </text>
+  <path d="M 300 600 L 350 580 L 400 590 L 450 570 L 500 560 L 550 550 L 600 540 L 650 530 L 700 540" stroke="#10b981" stroke-width="2" fill="none"/>
+  
+  <!-- Chart 4 -->
+  <rect x="740" y="450" width="430" height="300" rx="8" fill="#1e293b" opacity="0.8"/>
+  <text x="760" y="480" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#f8fafc">
+    Liquidity Stress Index
+  </text>
+  <rect x="760" y="680" width="390" height="10" fill="#dc2626" opacity="0.2"/>
+  <path d="M 760 650 L 810 620 L 860 630 L 910 660 L 960 640 L 1010 620 L 1060 610 L 1110 630 L 1160 620" stroke="#dc2626" stroke-width="3" fill="none"/>
+  
+  <!-- Status Badge -->
+  <rect x="1020" y="30" width="150" height="30" rx="15" fill="#10b981" opacity="0.2"/>
+  <text x="1045" y="50" font-family="Arial, sans-serif" font-size="12" fill="#10b981">
+    Synthetic Data Mode
+  </text>
+  
+  <!-- Event Markers -->
+  <circle cx="550" cy="230" r="8" fill="#ef4444" opacity="0.8"/>
+  <circle cx="900" cy="280" r="8" fill="#ef4444" opacity="0.8"/>
+  <circle cx="1050" cy="620" r="8" fill="#ef4444" opacity="0.8"/>
+  
+  <!-- Watermark -->
+  <text x="600" y="790" font-family="Arial, sans-serif" font-size="12" fill="#475569" text-anchor="middle">
+    Portfolio Demonstration - Synthetic Data
+  </text>
+</svg>
