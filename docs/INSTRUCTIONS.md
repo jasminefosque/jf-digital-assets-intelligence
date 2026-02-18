@@ -190,49 +190,93 @@ const yourMetric = useTimeSeries('your_metric_id');
 </ChartCard>
 ```
 
-### 6. Adding a Real Open Data Adapter
+### 6. Connecting Real Data Sources (DevOps/Engineering Showcase)
 
-#### Step 1: Create Adapter Class
+This section demonstrates how the dashboard architecture supports connecting real data sources through the DataProvider pattern. This showcases engineering capabilities for building production-ready data integrations.
+
+#### Architecture Pattern
+
+The DataProvider interface creates a clean separation between the UI and data sources:
+
 ```typescript
-// src/data/adapters/CoinGeckoAdapter.ts
-import type { DataProvider, GetSeriesParams } from '../DataProvider';
-import type { TimeSeries } from '../../models/schemas';
-
-export class CoinGeckoAdapter implements DataProvider {
-  private baseUrl = 'https://api.coingecko.com/api/v3';
-  
-  async getSeries(metricId: string, params?: GetSeriesParams): Promise<TimeSeries> {
-    // Only implement metrics you can get from free endpoint
-    if (metricId === 'btc_price') {
-      const response = await fetch(
-        `${this.baseUrl}/coins/bitcoin/market_chart?vs_currency=usd&days=365`
-      );
-      const data = await response.json();
-      
-      return {
-        metric_id: 'btc_price',
-        label: 'BTC Price',
-        unit: 'USD',
-        frequency: 'daily',
-        observations: data.prices.map(([timestamp, value]: [number, number]) => ({
-          date: new Date(timestamp).toISOString(),
-          value,
-        })),
-        source_type: 'open',
-      };
-    }
-    
-    throw new Error(`Metric ${metricId} not available from CoinGecko free tier`);
-  }
-  
-  // Implement other methods...
+// src/data/DataProvider.ts
+export interface DataProvider {
+  getSeries(metricId: string, params?: GetSeriesParams): Promise<TimeSeries>;
+  getLatest(metricId: string, params?: GetLatestParams): Promise<number>;
+  getMetadata(metricId: string): Promise<Partial<TimeSeries>>;
+  getEvents(params?: GetEventsParams): Promise<Event[]>;
 }
 ```
 
-#### Step 2: Update Factory
+#### Implementation Steps
+
+**Step 1: Create a New Provider Class**
+
+Create a new file implementing the DataProvider interface:
+
+```typescript
+// src/data/providers/YourDataProvider.ts
+import type { DataProvider, GetSeriesParams } from '../DataProvider';
+import type { TimeSeries } from '../../models/schemas';
+
+export class YourDataProvider implements DataProvider {
+  private baseUrl: string;
+  private apiKey?: string;
+  
+  constructor() {
+    // Configuration from environment variables
+    this.baseUrl = import.meta.env.VITE_API_BASE_URL;
+    this.apiKey = import.meta.env.VITE_API_KEY;
+  }
+  
+  async getSeries(metricId: string, params?: GetSeriesParams): Promise<TimeSeries> {
+    // Implement data fetching logic
+    // Transform external data format to TimeSeries schema
+    // Handle errors appropriately
+    
+    const response = await fetch(`${this.baseUrl}/data/${metricId}`, {
+      headers: this.apiKey ? { 'Authorization': `Bearer ${this.apiKey}` } : {}
+    });
+    
+    const data = await response.json();
+    
+    return {
+      metric_id: metricId,
+      label: data.name,
+      unit: data.unit,
+      frequency: 'daily',
+      observations: data.values.map((item: any) => ({
+        date: item.timestamp,
+        value: item.value,
+      })),
+      source_type: 'api',
+    };
+  }
+  
+  async getLatest(metricId: string, params?: GetLatestParams): Promise<number> {
+    // Implement latest value fetching
+    // Could fetch from a different endpoint or reuse getSeries
+  }
+  
+  async getMetadata(metricId: string): Promise<Partial<TimeSeries>> {
+    // Return metadata about the metric
+  }
+  
+  async getEvents(params?: GetEventsParams): Promise<Event[]> {
+    // Fetch and transform events data
+  }
+}
+```
+
+**Step 2: Update the Provider Factory**
+
+Modify the factory to support your new provider:
+
 ```typescript
 // src/data/index.ts
-import { CoinGeckoAdapter } from './adapters/CoinGeckoAdapter';
+import type { DataProvider } from './DataProvider';
+import { SyntheticDataProvider } from './synthetic/SyntheticDataProvider';
+import { YourDataProvider } from './providers/YourDataProvider';
 
 export function createDataProvider(): DataProvider {
   const mode = import.meta.env.VITE_DATA_MODE || 'synthetic';
@@ -240,21 +284,155 @@ export function createDataProvider(): DataProvider {
   switch (mode) {
     case 'synthetic':
       return new SyntheticDataProvider();
-    case 'coingecko':
-      return new CoinGeckoAdapter();
-    case 'open':
-      return new OpenDataProvider();
+    case 'live':
+      return new YourDataProvider();
     default:
       return new SyntheticDataProvider();
   }
 }
 ```
 
-#### Step 3: Set Environment Variable
+**Step 3: Configure Environment Variables**
+
+Add necessary configuration:
+
 ```bash
-# .env.local
-VITE_DATA_MODE=coingecko
+# .env.local (never commit this file)
+VITE_DATA_MODE=live
+VITE_API_BASE_URL=https://api.example.com/v1
+VITE_API_KEY=your_api_key_here  # Use secrets management in production
 ```
+
+**Step 4: Implement Error Handling and Caching**
+
+```typescript
+export class YourDataProvider implements DataProvider {
+  private cache = new Map<string, { data: any; timestamp: number }>();
+  private cacheDuration = 5 * 60 * 1000; // 5 minutes
+  
+  async getSeries(metricId: string, params?: GetSeriesParams): Promise<TimeSeries> {
+    // Check cache first
+    const cached = this.cache.get(metricId);
+    if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
+      return cached.data;
+    }
+    
+    try {
+      // Fetch data with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: { /* ... */ }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      const data = await this.transformResponse(await response.json());
+      
+      // Cache the result
+      this.cache.set(metricId, { data, timestamp: Date.now() });
+      
+      return data;
+    } catch (error) {
+      console.error(`Error fetching ${metricId}:`, error);
+      // Fallback strategy: return cached data if available
+      if (cached) {
+        console.warn('Using stale cached data due to fetch error');
+        return cached.data;
+      }
+      throw error;
+    }
+  }
+}
+```
+
+#### DevOps Best Practices for Data Integration
+
+**Security**
+- Never commit API keys or credentials to version control
+- Use environment variables for configuration
+- Implement proper authentication and authorization
+- Use secrets management systems (AWS Secrets Manager, HashiCorp Vault, etc.)
+- Rotate API keys regularly
+
+**Performance**
+- Implement caching to reduce API calls
+- Use request deduplication for concurrent requests
+- Set appropriate timeout values
+- Consider implementing rate limiting
+- Use pagination for large datasets
+
+**Reliability**
+- Implement retry logic with exponential backoff
+- Handle network errors gracefully
+- Provide fallback data sources
+- Monitor API health and availability
+- Log errors for debugging
+
+**Monitoring**
+- Track API response times
+- Monitor error rates
+- Set up alerts for API failures
+- Track API quota usage
+- Log all external requests
+
+**Testing**
+- Mock API responses in tests
+- Test error handling scenarios
+- Validate data schema transformations
+- Test caching behavior
+- Load test API integrations
+
+#### CI/CD Integration Example
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy Dashboard
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build
+        env:
+          VITE_DATA_MODE: ${{ secrets.DATA_MODE }}
+          VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          VITE_API_KEY: ${{ secrets.API_KEY }}
+        run: npm run build
+        
+      - name: Deploy
+        # Deploy to your hosting service
+        run: |
+          # Deployment commands here
+```
+
+This architecture demonstrates production-ready patterns for:
+- Clean separation of concerns
+- Configurable data sources
+- Secure credential management
+- Error handling and resilience
+- Performance optimization
+- DevOps automation
 
 ### 7. Adding a New Page
 

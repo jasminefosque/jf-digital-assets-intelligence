@@ -1,25 +1,30 @@
 # Security Documentation
 
-This document outlines security practices and guidelines for the Digital Assets Intelligence dashboard.
+This document outlines security practices and guidelines for implementing secure data integrations in dashboard systems.
 
-## Portfolio Security Commitment
+## Example Dashboard Security
 
-✅ **No API keys committed to version control**
+This example dashboard demonstrates secure development practices:
+
+✅ **No API keys or credentials required**
+✅ **No external API connections**
 ✅ **No production endpoints or URLs**
-✅ **No real database credentials**
-✅ **No proprietary datasets or schemas**
-✅ **No paid vendor integration patterns**
+✅ **No database connections**
+✅ **Uses synthetic data only**
 
-This repository is designed as a portfolio demonstration only. Production systems use entirely separate infrastructure.
+This approach enables immediate demonstration without any security concerns from credential management.
 
-## Environment Variables
+## Environment Variables for Production Systems
+
+When implementing real data integrations, use environment variables for configuration.
 
 ### Development
 Create a `.env.local` file (gitignored) for local development:
 
 ```bash
-# .env.local
-VITE_DATA_MODE=synthetic
+# .env.local - Never commit this file
+VITE_API_BASE_URL=https://api.example.com
+VITE_API_KEY=your_development_key_here
 ```
 
 Never commit `.env.local` to Git.
@@ -84,53 +89,85 @@ VITE_PUBLIC_API=https://api.example.com  # ✅ Available in client
 DATABASE_URL=postgres://...              # ❌ Server-side only
 ```
 
-## Synthetic Data Mode
+## Synthetic Data Approach
 
-The default `synthetic` mode requires **no secrets or external services**:
-- All data generated in-memory
-- No network calls
-- No authentication
-- Completely offline-capable
+This example dashboard uses synthetic data generation, which:
+- Requires **no secrets or external services**
+- Makes **no network calls**
+- Requires **no authentication**
+- Is **completely offline-capable**
 
-This enables:
-- Immediate portfolio demonstration
-- No setup barriers for reviewers
-- Zero security risk from leaked credentials
+This approach enables:
+- Immediate demonstration without setup
+- No security risk from credential exposure
+- No dependencies on external services
+- Easy testing and development
 
-## Open Data Mode
+## Implementing Data Integrations Securely
 
-When implementing open data adapters:
+When adding real data sources to a production system, follow these security guidelines:
 
-### Guidelines
-1. **Only use completely free, keyless APIs**
-   - Example: CoinGecko public endpoint (rate-limited but free)
-   - Example: Blockchain.com public API
+### Guidelines for API Integration
+1. **Never hardcode credentials**
+   - Use environment variables for all API keys and secrets
+   - Store sensitive credentials in secrets management systems
    
-2. **Never require API keys for portfolio demo**
-   - If a source requires keys, make it optional
-   - Provide fallback to synthetic mode
+2. **Implement proper authentication**
+   - Use OAuth 2.0 or API keys as appropriate
+   - Rotate credentials regularly
+   - Use different credentials for development and production
 
 3. **Document rate limits**
    - Implement client-side throttling
    - Cache responses appropriately
+   - Monitor API usage
 
 4. **Handle errors gracefully**
-   - Never expose error details that leak infrastructure
-   - Provide user-friendly messages
+   - Never expose error details that leak infrastructure information
+   - Provide user-friendly error messages
+   - Log errors securely for debugging
 
-### Example Open Adapter (Safe)
+### Example Secure Data Provider Implementation
 ```typescript
-async getSeries(metricId: string): Promise<TimeSeries> {
-  try {
-    // Free, keyless endpoint
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
-    );
-    const data = await response.json();
-    // Transform to schema...
-  } catch (error) {
-    console.error('Failed to fetch data, using fallback');
-    // Fallback to cached or synthetic
+export class SecureDataProvider implements DataProvider {
+  private apiKey: string;
+  private baseUrl: string;
+  
+  constructor() {
+    // Load from environment variables
+    this.apiKey = import.meta.env.VITE_API_KEY;
+    this.baseUrl = import.meta.env.VITE_API_BASE_URL;
+    
+    if (!this.apiKey || !this.baseUrl) {
+      throw new Error('Missing required API configuration');
+    }
+  }
+  
+  async getSeries(metricId: string): Promise<TimeSeries> {
+    try {
+      const response = await fetch(`${this.baseUrl}/data/${metricId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return this.transformToSchema(data);
+    } catch (error) {
+      console.error('Failed to fetch data:', error.message);
+      // Fallback to cached data or error state
+      throw new Error('Unable to fetch data at this time');
+    }
+  }
+  
+  private transformToSchema(data: any): TimeSeries {
+    // Transform external format to internal schema
+    // Validate with Zod schemas
   }
 }
 ```
@@ -189,13 +226,16 @@ When deploying to production:
 - [ ] Enable MFA for admin access
 - [ ] Use OAuth 2.0 / OpenID Connect for third-party auth
 
-### API Security
-- [ ] Rate limit all endpoints
+### API Security Best Practices
+- [ ] Rate limit all API endpoints
 - [ ] Validate all inputs
 - [ ] Sanitize outputs (prevent XSS)
 - [ ] Use parameterized queries (prevent SQL injection)
 - [ ] Implement request signing
-- [ ] Use API keys with proper rotation
+- [ ] Use API keys with proper rotation policies
+- [ ] Track API usage patterns
+- [ ] Implement retry logic with exponential backoff
+- [ ] Monitor for unusual access patterns
 
 ### Data Security
 - [ ] Encrypt data at rest
