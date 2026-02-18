@@ -94,7 +94,7 @@ This dashboard models sophisticated digital asset market dynamics:
 ### **Technology Stack**
 
 | Layer | Technology | Rationale |
-|-------|-----------|-----------|
+|---|---|---|
 | **Framework** | React 19 | Latest features, concurrent rendering, improved performance |
 | **Language** | TypeScript | Type safety, better DX, catches errors at compile-time |
 | **Build Tool** | Vite | Fast HMR, optimized builds, modern dev experience |
