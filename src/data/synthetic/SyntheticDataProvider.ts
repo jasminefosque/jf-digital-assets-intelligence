@@ -1,5 +1,5 @@
-import { DataProvider, GetSeriesParams, GetLatestParams, GetEventsParams } from '../DataProvider';
-import { TimeSeries, Event } from '../../models/schemas';
+import type { DataProvider, GetSeriesParams, GetLatestParams, GetEventsParams } from '../DataProvider';
+import type { TimeSeries, Event } from '../../models/schemas';
 import { SyntheticGenerator } from './generator';
 import { generateSyntheticEvents } from './events';
 
@@ -139,7 +139,7 @@ export class SyntheticDataProvider implements DataProvider {
     };
   }
   
-  async getLatest(metricId: string, params?: GetLatestParams): Promise<number> {
+  async getLatest(metricId: string, _params?: GetLatestParams): Promise<number> {
     const values = this.cachedData.get(metricId);
     
     if (!values) {

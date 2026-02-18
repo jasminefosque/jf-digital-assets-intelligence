@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { Header } from './components/layout/Header';
+import { FilterBar } from './components/layout/FilterBar';
+import { KPIStrip } from './components/layout/KPIStrip';
+import { Sidebar } from './components/layout/Sidebar';
+import { EventModal } from './components/EventModal';
+import { MethodologyDrawer } from './components/MethodologyDrawer';
+import { OverviewPage } from './pages/OverviewPage';
+import { useEvents } from './hooks/useData';
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [currentPage, setCurrentPage] = useState('overview');
+  
+  // Load events on mount
+  useEvents();
+  
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'overview':
+        return <OverviewPage />;
+      case 'methodology':
+        // Methodology is shown in drawer, default to overview
+        return <OverviewPage />;
+      default:
+        return (
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Page Under Construction
+              </h2>
+              <p className="text-gray-600">
+                {currentPage} page is being implemented
+              </p>
+            </div>
+          </div>
+        );
+    }
+  };
+  
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <FilterBar />
+      <KPIStrip />
+      
+      <div className="flex">
+        <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
+        
+        <main className="flex-1 p-6">
+          {renderPage()}
+        </main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      
+      <EventModal />
+      <MethodologyDrawer />
+    </div>
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Asset, Event } from '../models/schemas';
+import type { Asset, Event } from '../models/schemas';
 
 export interface DateRange {
   startDate: string;

@@ -1,4 +1,4 @@
-import { Event, EventCategory } from '../../models/schemas';
+import type { Event, EventCategory } from '../../models/schemas';
 
 export interface EventDefinition {
   event_id: string;

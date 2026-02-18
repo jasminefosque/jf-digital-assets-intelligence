@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TimeSeries, Event } from '../models/schemas';
+import type { TimeSeries } from '../models/schemas';
 import { getDataProvider } from '../data';
 import { useAppStore } from '../app/store';
 

@@ -120,7 +120,7 @@ export class SyntheticGenerator {
     const prices: number[] = [];
     let price = 30000 + Math.random() * 20000; // Start between 30k-50k
     
-    dailyDates.forEach((date, i) => {
+    dailyDates.forEach((date) => {
       const regime = this.getRegimeAtDate(date);
       const dailyVol = regime.volatility / Math.sqrt(252); // Annualized to daily
       
@@ -157,8 +157,8 @@ export class SyntheticGenerator {
     const correlation = 0.85; // High correlation with BTC
     let ethPrice = 1500 + Math.random() * 1000;
     
-    btcPrices.forEach((btcPrice, i) => {
-      const btcReturn = i > 0 ? (btcPrice / btcPrices[i - 1]) - 1 : 0;
+    btcPrices.forEach((btcPrice, idx) => {
+      const btcReturn = idx > 0 ? (btcPrice / btcPrices[idx - 1]) - 1 : 0;
       
       // Correlated return
       const correlatedReturn = correlation * btcReturn;
@@ -238,11 +238,11 @@ export class SyntheticGenerator {
   /**
    * Generate stablecoin supply
    */
-  generateStablecoinSupply(dailyDates: Date[], marketCap: number[]): number[] {
+  generateStablecoinSupply(dailyDates: Date[], _marketCap: number[]): number[] {
     const supply: number[] = [];
     let currentSupply = 100 + Math.random() * 20; // Start 100-120B
     
-    dailyDates.forEach((date, i) => {
+    dailyDates.forEach((date) => {
       const regime = this.getRegimeAtDate(date);
       
       // Stablecoins grow in bull markets, contract in bears
@@ -281,7 +281,7 @@ export class SyntheticGenerator {
   generateOnChainVolume(dailyDates: Date[], volatility: number[], marketCap: number[]): number[] {
     const volumes: number[] = [];
     
-    dailyDates.forEach((date, i) => {
+    dailyDates.forEach((_date, i) => {
       // Volume correlates with volatility and market cap
       const baseVolume = 20 + Math.random() * 10; // Base 20-30B
       const volMultiplier = 1 + (volatility[i] / 100); // Higher vol = more volume
@@ -321,13 +321,12 @@ export class SyntheticGenerator {
   /**
    * Generate BTC ETF flows
    */
-  generateETFFlows(dailyDates: Date[], btcPrices: number[]): number[] {
+  generateETFFlows(dailyDates: Date[], _btcPrices: number[]): number[] {
     const flows: number[] = [];
     let momentum = 0;
     
-    dailyDates.forEach((date, i) => {
+    dailyDates.forEach((date) => {
       const regime = this.getRegimeAtDate(date);
-      const priceChange = i > 0 ? (btcPrices[i] / btcPrices[i - 1]) - 1 : 0;
       
       // Flows have persistence and lag price
       const flowShock = this.gaussianRandom() * 150;
@@ -437,12 +436,10 @@ export class SyntheticGenerator {
    * Generate risk regime classification
    */
   generateRiskRegime(dailyDates: Date[], volatility: number[], leverage: number[]): string[] {
-    return dailyDates.map((date, i) => {
-      const regime = this.getRegimeAtDate(date);
-      
-      if (volatility[i] > 70 || leverage[i] < 12) {
+    return dailyDates.map((_date, idx) => {
+      if (volatility[idx] > 70 || leverage[idx] < 12) {
         return 'risk_off';
-      } else if (volatility[i] < 40 && leverage[i] > 17) {
+      } else if (volatility[idx] < 40 && leverage[idx] > 17) {
         return 'risk_on';
       } else {
         return 'neutral';
@@ -481,7 +478,7 @@ export class SyntheticGenerator {
    */
   generateETFMomentum(flows: number[]): number[] {
     const window = 20;
-    return flows.map((flow, i) => {
+    return flows.map((_flow, i) => {
       if (i < window) return 50;
       
       const recentFlows = flows.slice(i - window, i);

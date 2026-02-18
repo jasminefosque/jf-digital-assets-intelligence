@@ -1,4 +1,4 @@
-import { TimeSeries, Event } from '../models/schemas';
+import type { TimeSeries, Event } from '../models/schemas';
 
 export interface GetSeriesParams {
   startDate?: string;
