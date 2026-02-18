@@ -4,7 +4,6 @@ import {
   EventSchema, 
   FrequencySchema, 
   AssetSchema,
-  SourceTypeSchema,
   EventCategorySchema,
   RiskRegimeSchema 
 } from '../models/schemas';
